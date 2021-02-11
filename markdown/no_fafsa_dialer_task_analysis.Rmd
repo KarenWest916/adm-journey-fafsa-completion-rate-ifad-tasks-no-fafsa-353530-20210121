@@ -45,7 +45,6 @@ nofafsa_df <- dbGetQuery(
 
 
 
-#Aggregate test results to date
 ```{r}
 nofafsa_results <- 
   nofafsa_df %>% 
@@ -57,8 +56,10 @@ nofafsa_results <-
       `FAFSA Completion Rate` = sum(fafsa_completed)/n(),
       #Apps = sum(Apps),
        #`App Rate` = sum(Apps) / n(),
-       Enrolls = sum(Regs),
-      `Enroll Rate` = sum(Regs) / n()
+       Regs = sum(Regs),
+      `Reg Rate` = sum(Regs) / n(),
+       Enrolls = sum(Enrolls),
+      `Enroll Rate` = sum(Enrolls) / n()
       #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
        #`App to Enroll` = sum(Regs) /sum(Apps) 
   ) %>% 
@@ -66,6 +67,7 @@ nofafsa_results <-
  gt() %>%
      fmt_percent(columns = vars(
       `FAFSA Completion Rate`,
+      `Reg Rate`,
       `Enroll Rate`,
       #`FAFSA to Enroll Rate`,
       #`App to Enroll`
@@ -76,6 +78,7 @@ nofafsa_results <-
     InPopulation,
      #Apps
      `FAFSA Completed`,
+    Regs,
     Enrolls
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
@@ -101,7 +104,7 @@ nofafsa_results
 
 ```{r}
 # Overall results save
-nofafsa_results %>% gtsave(filename = "nofafsa_21EW3_overall_20210129.png", path = here::here("imgs"))
+nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210211.png", path = here::here("imgs"))
 ```
 
 ```
