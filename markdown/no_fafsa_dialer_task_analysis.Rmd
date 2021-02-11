@@ -1,0 +1,112 @@
+---
+title: "remap_nofafsa_dialing_task_ug_analysis"
+output: html_document
+---
+
+# Load libraries
+```{r load-libraries, include=FALSE}
+# setup
+library(DBI)
+library(odbc)
+library(tidyverse)
+library(gt)
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE,
+  fig.align = 'center',
+  fig.width = 10,
+  fig.height = 6
+)
+```
+
+
+#database connection
+```{r connection-string,include=FALSE}
+#database connection
+con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL Server Native Client 11.0};\n                          Server=COCE-DS-LSTNR,50222;\n                          Database=Data_Reporting;\n                          trusted_connection=yes;")
+```
+
+
+
+
+#import data from query
+```{r}
+nofafsa_df <- dbGetQuery(
+  conn = con_data_reporting, 
+  statement = read_file(
+    file = here::here("sql","no_fafsa_dialer_task_ug_21EW4.sql")
+  )
+) %>% as_tibble()
+```
+
+
+
+
+
+#Aggregate test results to date
+```{r}
+nofafsa_results <- 
+  nofafsa_df %>% 
+  #filter(fafsa_completed==0) %>% 
+  group_by(testing_group) %>% 
+  summarise(
+      InPopulation = n(), 
+      `FAFSA Completed` = sum(fafsa_completed),
+      `FAFSA Completion Rate` = sum(fafsa_completed)/n(),
+      #Apps = sum(Apps),
+       #`App Rate` = sum(Apps) / n(),
+       Enrolls = sum(Regs),
+      `Enroll Rate` = sum(Regs) / n()
+      #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
+       #`App to Enroll` = sum(Regs) /sum(Apps) 
+  ) %>% 
+  rename(`Test Group` = testing_group) %>% 
+ gt() %>%
+     fmt_percent(columns = vars(
+      `FAFSA Completion Rate`,
+      `Enroll Rate`,
+      #`FAFSA to Enroll Rate`,
+      #`App to Enroll`
+     
+     ), decimals = 1) %>%
+     fmt_number(columns = vars(
+     #Leads,
+    InPopulation,
+     #Apps
+     `FAFSA Completed`,
+    Enrolls
+     ), decimals = 0) %>%
+      data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
+   tab_header(
+    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
+    tab_source_note(
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 2/11/21"))
+  #%>%
+     #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
+    #tab_options(
+      # column_labels.font.size = 13,
+      # table.font.size = 12
+    #)
+
+
+nofafsa_results
+  
+```
+
+
+
+
+
+```{r}
+# Overall results save
+nofafsa_results %>% gtsave(filename = "nofafsa_21EW3_overall_20210129.png", path = here::here("imgs"))
+```
+
+```
+
+
+
+
+
