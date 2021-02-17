@@ -88,8 +88,8 @@ FROM  msr.fa.CRILimboDocDetails FA
 WHERE   [Planned Start Term] in ('21EW4')
 ) AS SSR ON SSR.StudentID = c.Colleague_ID__c
 WHERE Acad = 'UG'
-----removing all of the nulls from the comparison
---AND C.Icosagonain_Expirmentation_Cell__c IS NOT null
+--removing all of the nulls from the comparison
+AND C.Icosagonain_Expirmentation_Cell__c IS NOT null
 ) AS curr_fafsa_status ON curr_fafsa_status.ContactID = o.Contact__c
 
 
