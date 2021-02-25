@@ -108,7 +108,20 @@ WHERE
 f.RN = 1
 and
 (t.Name ='21EW4')
+AND f0.DateofEntry > '2021-01-27'
 --remove any of the null test groups
 AND f0.Test_Group IS NOT NULL
 AND (f0.Financial__c <> 'Out of Pocket' OR f0.Financial__c IS NULL)
 
+
+
+
+--SELECT
+--Acad,
+--Test_Group,
+--DateofEntry
+--FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer]
+--GROUP BY Acad,
+--Test_Group,
+--DateofEntry
+--ORDER BY DateofEntry
