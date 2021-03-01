@@ -79,7 +79,7 @@ dates_df <- dbGetQuery(
 ```{r}
 fafsa_weekly_file_df <-
   as_tibble() %>%
-  left_join(x = fafsa_dates_df,
+  inner_join(x = fafsa_dates_df,
             y = dates_df,
             by = c("StudentFAFSAFileDate" = "DateFull")) 
 ```
@@ -110,8 +110,8 @@ nofafsa_results <-
        #`App Rate` = sum(Apps) / n(),
        Regs = sum(Regs),
       `Reg Rate` = sum(Regs) / n(),
-       Enrolls = sum(Enrolls),
-      `Enroll Rate` = sum(Enrolls) / n()
+       #Enrolls = sum(Enrolls),
+      #`Enroll Rate` = sum(Enrolls) / n()
       #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
        #`App to Enroll` = sum(Regs) /sum(Apps) 
   ) %>% 
@@ -120,7 +120,7 @@ nofafsa_results <-
      fmt_percent(columns = vars(
       `FAFSA Completion Rate`,
       `Reg Rate`,
-      `Enroll Rate`,
+      #`Enroll Rate`,
       #`FAFSA to Enroll Rate`,
       #`App to Enroll`
      
@@ -131,13 +131,13 @@ nofafsa_results <-
      #Apps
      `FAFSA Completed`,
     Regs,
-    Enrolls
+    #Enrolls
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 2/25/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/1/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -156,7 +156,7 @@ nofafsa_results
 
 ```{r}
 # Overall results save
-nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210217_no_ico_nulls.png", path = here::here("imgs"))
+nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210301.png", path = here::here("imgs"))
 ```
 
 
@@ -167,8 +167,8 @@ nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210217_no_ico_nul
 ```{r}
 fafsa_weekly_file_results <- 
   no_fafsa_weekly_file_df %>% 
-  #filter(fafsa_completed==0) %>% 
-  group_by(testing_group, WeekStartDate) %>% 
+  filter(is.na(fafsa_completed)) %>% 
+  group_by(WeekStartDate) %>% 
   summarise(
       InPopulation = n(), 
       `FAFSA Completed` = sum(fafsa_completed),
@@ -182,7 +182,7 @@ fafsa_weekly_file_results <-
       #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
        #`App to Enroll` = sum(Regs) /sum(Apps) 
   ) %>% 
-  rename(`Test Group` = testing_group) %>% 
+  #rename(`Test Group` = testing_group) %>% 
  gt() %>%
      fmt_percent(columns = vars(
       `FAFSA Completion Rate`,
@@ -190,7 +190,6 @@ fafsa_weekly_file_results <-
       `Enroll Rate`,
       #`FAFSA to Enroll Rate`,
       #`App to Enroll`
-     
      ), decimals = 1) %>%
      fmt_number(columns = vars(
      #Leads,
@@ -204,7 +203,7 @@ fafsa_weekly_file_results <-
    tab_header(
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 2/17/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/1/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(

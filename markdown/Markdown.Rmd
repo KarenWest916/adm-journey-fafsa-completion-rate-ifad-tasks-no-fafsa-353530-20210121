@@ -1,0 +1,64 @@
+---
+title: "Southern New Hampshire University"
+subtitle: "[DRAFT] ReMap Experiment: No FAFSA (UG) Dialing + Funding Task"
+author: "Karen West |  k.west2@snhu.edu"
+date: "Updated: `r Sys.Date()`"
+output:
+  html_document: 
+    css: snhu-remap-test-style.css
+    include:
+      in_header: insert-logo.html
+---
+
+## Overview `r fontawesome::fa("binoculars")`
+<br>
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/.png"))
+```
+
+<br>
+
+
+__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (FAFSA) as part of the admission process.
+
+__Hypothesis:__ Outreaching students who have not completed their FAFSA *increases* their likelihood to complete their FAFSA.
+
+## Test Design `r fontawesome::fa("flask")`
+
+__Test Metric:__ FAFSA Completion Rate, calculated as:
+$$FAFSA Completion Rate  = \sum_{n=FAFSA Complete} / \sum_{n=Total Eligible to Complete FAFSA}$$
+
+__Testing Groups:__ Of all eligible members of the population (full criteria list below), control and experiment groups were assigned according to testing cells on the Unify contact.
+
++ Control Group: **30%** of eligible list were not dialed nor provided with a funding task
++ Dialer Experiment Group: **35%** of eligible list - these were *dialed*
++ Dialer & Task Experiment Group: **35%** of eligible list - these were *dialed* and a *funding task* was added in Unify
+
+Dialers were performed every other week and Funding Tasks were created alternating weeks.
+
+**Experiment Population Eligibility (AKA InPopulation):**
+
++ UG prospective student with open Admission opportunity for the 21EW4 term 
++ In Applied, App In Progress or Accepted Stage 
++ Has not completed a 20/21 FAFSA or has only completed the "wrong" FAFSA year (only completed 21-22 FAFSA form and must complete 20-21)    
++ Prospective student has either indicated they plan on using financial aid (per Financial Plan field in Unify Admission Opportunity), or Financial Plan field is blank
++ Is not Course-Work Only (CWO) or a Guild student
+
+## Outcomes & Learnings `r fontawesome::fa("chart-bar")`
+
+__Experiment Results:__
+
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210301.png", ""))
+```
+
+
+__Learnings:__
+
+__Next Steps:__
+
+
+dates for dialers/tasks
+dialer did not run on 2/18
