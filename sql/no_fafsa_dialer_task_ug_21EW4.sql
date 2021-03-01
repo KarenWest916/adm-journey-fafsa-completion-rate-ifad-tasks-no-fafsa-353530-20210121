@@ -38,13 +38,16 @@ o.StageName,
 	 o.Registered_Date_Time__c,
 	 o.Started_Date_Time__c,
 	 o.[Closed_Lost_Date_Time__c],
+	 task.task_date AS funding_task_date,
 
 CASE WHEN o.Applied_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Apps,
 CASE WHEN o.App_in_Progress_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS AppIPs,
 CASE WHEN o.Accepted_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Accepts,
 CASE WHEN o.Registered_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Regs,
 CASE WHEN o.Registered_Date_Time__c IS NOT NULL AND o.stagename='Closed Won' THEN 1 ELSE 0 END AS Enrolls,
-CASE WHEN o.Started_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Starts
+CASE WHEN o.Started_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Starts,
+CASE WHEN task.task_date IS NOT NULL THEN 1 ELSE 0 END AS wastask,
+CASE WHEN DATEDIFF(DAY, task.task_date, o.Registered_Date_Time__c) < 7 THEN 1 ELSE 0 END AS reg_within_7_days_of_task
 
 
 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer] f0 
@@ -104,6 +107,16 @@ INNER JOIN UnifyStaging.dbo.Opportunity o ON o.id = f.Id
 INNER JOIN UnifyStaging.dbo.Contact c ON c.id = f.Contact__c
 --INNER JOIN Data_Reporting.MSTR.DimStudent df ON df.Studentid  = c.id
 INNER JOIN UnifyStaging.dbo.hed__Term__c t ON t.id = o.Term__c
+
+left JOIN (
+select WhoId AS who_id, MAX(ActivityDate) AS task_date
+FROM UnifyStaging.dbo.Task
+WHERE
+ActivityDate > '2021-01-27'
+AND subject = 'Check on Student Funding'
+GROUP BY task.WhoId) AS task
+ON task.who_id = f0.ContactID
+
 WHERE 
 f.RN = 1
 and
@@ -112,6 +125,10 @@ AND f0.DateofEntry > '2021-01-27'
 --remove any of the null test groups
 AND f0.Test_Group IS NOT NULL
 AND (f0.Financial__c <> 'Out of Pocket' OR f0.Financial__c IS NULL)
+
+
+
+
 
 
 

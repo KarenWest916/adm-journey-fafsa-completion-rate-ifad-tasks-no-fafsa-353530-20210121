@@ -8,13 +8,16 @@ output:
     css: snhu-remap-test-style.css
     include:
       in_header: insert-logo.html
+    toc: true
+    toc_float: true
+          
 ---
 
 ## Overview `r fontawesome::fa("binoculars")`
 <br>
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/.png"))
+knitr::include_graphics(here::here("imgs/no_fafsa_test_summary.png"))
 ```
 
 <br>
@@ -47,8 +50,15 @@ Dialers were performed every other week and Funding Tasks were created alternati
 
 ## Outcomes & Learnings `r fontawesome::fa("chart-bar")`
 
-__Experiment Results:__
+### Experiment Results
 
++ __Overall Results as of 3/1/21:__ 
+
+  - FAFSA Completion Rate for the **Dialer + Task** test group was **0.4 percentage points lower (-1.7% change)**. This difference is not statistically significant at 95% confidence.
+
+  - FAFSA Completion Rate for the **Dialer Only** test group was **1.0 percentage points higher (3.3% change)**. This difference is not statistically significant at 95% confidence.
+
++ __Completed FAFSA and Registered (Rate):__ NEED TO UPDATE The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**21.1%**) as compared to the control group (**22.1%**).
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
 knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210301.png", ""))
@@ -57,8 +67,20 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210301.png", ""
 
 __Learnings:__
 
+can we isolate just those that received a task
+
 __Next Steps:__
 
+maybe test with just a funding task and no dialer?
 
-dates for dialers/tasks
-dialer did not run on 2/18
+<br>
+
+## Glossary of Terms `r fontawesome::fa("journal-whills")`
+
+
+## Appendix `r fontawesome::fa("toilet-paper")`
+<!-- #`r fontawesome::fa("stack-overflow")` -->
+
+Dialers Ran: 1/21, 2/4 
+Funding Tasks Created: 1/28, 2/11
+Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being run that day
