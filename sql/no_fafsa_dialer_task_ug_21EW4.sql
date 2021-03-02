@@ -38,7 +38,9 @@ o.StageName,
 	 o.Registered_Date_Time__c,
 	 o.Started_Date_Time__c,
 	 o.[Closed_Lost_Date_Time__c],
-	 task.task_date AS funding_task_date,
+	 ftask.task_date AS funding_task_date,
+	 dtask.task_date AS dialer_task_date,
+
 
 CASE WHEN o.Applied_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Apps,
 CASE WHEN o.App_in_Progress_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS AppIPs,
@@ -46,8 +48,10 @@ CASE WHEN o.Accepted_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Accepts,
 CASE WHEN o.Registered_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Regs,
 CASE WHEN o.Registered_Date_Time__c IS NOT NULL AND o.stagename='Closed Won' THEN 1 ELSE 0 END AS Enrolls,
 CASE WHEN o.Started_Date_Time__c IS NOT NULL THEN 1 ELSE 0 END AS Starts,
-CASE WHEN task.task_date IS NOT NULL THEN 1 ELSE 0 END AS wastask,
-CASE WHEN DATEDIFF(DAY, task.task_date, o.Registered_Date_Time__c) < 7 THEN 1 ELSE 0 END AS reg_within_7_days_of_task
+CASE WHEN ftask.task_date IS NOT NULL THEN 1 ELSE 0 END AS funding_task,
+CASE WHEN dtask.task_date IS NOT NULL THEN 1 ELSE 0 END AS dialer_task,
+CASE WHEN ftask.task_date IS NOT NULL AND dtask.task_date IS NULL THEN 1 ELSE 0 END AS funding_only
+--CASE WHEN DATEDIFF(DAY, ftask.task_date, o.Registered_Date_Time__c) < 7 THEN 1 ELSE 0 END AS reg_within_7_days_of_task
 
 
 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer] f0 
@@ -56,10 +60,11 @@ FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer] f0
 --take most recent record from test table
 INNER JOIN  
 (
-SELECT ContactID, MAX(DateofEntry)[MaxDate]
+SELECT ContactID, min(DateofEntry)[MaxDate]
 FROM 
 Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer]
 WHERE Acad = 'UG'
+AND DateofEntry > '2021-01-20'
 GROUP BY ContactID
 ) AS t_date ON t_date.ContactID = f0.ContactID AND t_date.MaxDate = F0.DateofEntry
 INNER JOIN  
@@ -109,23 +114,34 @@ INNER JOIN UnifyStaging.dbo.Contact c ON c.id = f.Contact__c
 INNER JOIN UnifyStaging.dbo.hed__Term__c t ON t.id = o.Term__c
 
 left JOIN (
-select WhoId AS who_id, MAX(ActivityDate) AS task_date
-FROM UnifyStaging.dbo.Task
+select WhoId AS who_id, MAX(CreatedDate) AS task_date
+FROM UnifyStaging.dbo.task
 WHERE
-ActivityDate > '2021-01-27'
+CreatedDate > '2021-01-20'
 AND subject = 'Check on Student Funding'
-GROUP BY task.WhoId) AS task
-ON task.who_id = f0.ContactID
+GROUP BY task.WhoId) AS ftask
+ON ftask.who_id = f0.ContactID
+
+
+
+left JOIN (
+select WhoId AS who_id, MAX(CreatedDate) AS task_date
+FROM UnifyStaging.dbo.task
+WHERE
+CreatedDate > '2021-01-20'
+AND SUBJECT like '%In-Funnel Auto Dial%'
+GROUP BY task.WhoId) AS dtask
+ON dtask.who_id = f0.ContactID
 
 WHERE 
 f.RN = 1
 and
 (t.Name ='21EW4')
-AND f0.DateofEntry > '2021-01-27'
+AND f0.DateofEntry > '2021-01-20'
 --remove any of the null test groups
 AND f0.Test_Group IS NOT NULL
 AND (f0.Financial__c <> 'Out of Pocket' OR f0.Financial__c IS NULL)
-
+--AND f0.ContactID = '0033l00002iY4nfAAC'
 
 
 
