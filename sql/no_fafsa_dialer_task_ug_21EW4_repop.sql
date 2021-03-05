@@ -6,8 +6,8 @@ SELECT
 
 f0.Icosagonain_Expirmentation_Cell__c,
 --CASE WHEN f0.Icosagonain_Expirmentation_Cell__c NOT IN ('A1','B1','C1','D1') THEN 'Experiment' ELSE 'Control' END AS 
-f0.Test_Group AS testing_group,
-f0.grouping AS new_groups,
+f0.Test_Group AS org_testing_group,
+f0.treatment AS treatment,
 f0.new_test_or_control,
 f0.LeadType,
 f0.ContactID,

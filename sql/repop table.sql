@@ -39,6 +39,7 @@ in the pipeline logging redux table.
 			INTO #jan28
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-01-28'
+		AND p.Planned_Start_Term = '21EW4'
 
 
 		IF OBJECT_ID ('tempdb..#feb4') IS NOT NULL
@@ -49,6 +50,7 @@ in the pipeline logging redux table.
 			INTO #feb4
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-02-04'
+		AND p.Planned_Start_Term = '21EW4'
 
 
 		IF OBJECT_ID ('tempdb..#feb11') IS NOT NULL
@@ -59,54 +61,85 @@ in the pipeline logging redux table.
 			INTO #feb11
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-02-11'
+		AND p.Planned_Start_Term = '21EW4'
+
+
+
+
+/* this is here I got stuck - attempting to insert the planned term from the temp tables into newly added columns in Repop table*/
+
+INSERT INTO Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] (jan28_term)
+SELECT Planned_Start_Term
+FROM #jan28 j28
+INNER JOIN Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] pop
+ON j28.studentid = pop.ContactID
+WHERE j28.studentid = pop.ContactID
+
+
+
 
 
 		/*this takes the most recent opportunity that existed out of the
 		 three dates for that student
+
+		 		--grabs all unify staging opps that are admission opportunities
+
+
 		*/
 
 		IF OBJECT_ID ('tempdb..#pipeopp') IS NOT NULL
 			DROP TABLE #pipeopp;
-			SELECT distinct p1.Id, p1.Planned_Start_Term
+			SELECT distinct p2.id AS OppId, p2.studentid
+			
 			INTO #pipeopp
 
-			--SELECT DISTINCT p1.Id
-
-			FROM Data_Reporting.dbo.PipelineLoggingRedux p1
+		
+			FROM Data_Reporting.dbo.PipelineLoggingRedux p2
 			INNER JOIN 
-			(SELECT Max(dateofentry) AS date, p.OppID
+
+			(SELECT p.Id AS OppId,
+			p.studentid, 
+			p.dateofentry,
+			ROW_NUMBER() OVER (PARTITION BY p.studentid ORDER BY p.DateOfEntry DESC) AS RN
+
 			FROM Data_Reporting.dbo.PipelineLoggingRedux p
-			
-			INNER JOIN 
 
+			INNER JOIN 
+			--grabs all oppIds that are admission opportunities
 			(
-			--grabs all unify staging opps that are admission opportunities
-			SELECT o.id
-			FROM UnifyStaging.dbo.Opportunity o
-			INNER JOIN UnifyStaging.dbo.RecordType rt
-			ON rt.id = o.RecordTypeId
-			WHERE rt.name = 'Admission Opportunity') AS admopp
-			ON adm.id = p.OppID
-			
-			WHERE 
-			(p.DateOfEntry = '2021-01-28'
+			SELECT DISTINCT o.id, o.Contact__c
+				FROM UnifyStaging.dbo.Opportunity o
+				INNER JOIN UnifyStaging.dbo.RecordType rt
+				ON rt.id = o.RecordTypeId
+				WHERE rt.name = 'Admission Opportunity'
+				) AS admopp
+
+				ON admopp.id = p.Id
+				AND admopp.Contact__c = p.studentid
+
+			WHERE(p.DateOfEntry = '2021-01-28'
 			OR p.DateOfEntry = '2021-02-04'
 			OR p.DateOfEntry = '2021-02-11')
-			GROUP BY p.Id) AS  p2
-	
-	
-
-
-
-			WHERE (p1.DateOfEntry = '2021-01-28'
-			OR p1.DateOfEntry = '2021-02-04'
-			OR p1.DateOfEntry = '2021-02-11')
 			
+			) AS p1
+
+			ON p1.OppId = p2.id
 
 
---SELECT TOP 100 * FROM Data_Reporting.dbo.PipelineLoggingRedux
+			where p1.RN = 1
+			AND p2.DateOfEntry = p1.DateOfEntry
+			--AND p2.studentid = '0033l00002gFYRUAA4'
 
 
+
+
+SELECT * FROM Data_Reporting.dbo.PipelineLoggingRedux
+WHERE studentid ='0033l00002gFYRUAA4'
+ORDER BY DateOfEntry desc
+WHERE id = '0063l00000lNygmAAC'
+
+
+SELECT * FROM #pipeopp
 
 
 
@@ -126,7 +159,11 @@ in the pipeline logging redux table.
 
 --INSERT INTO [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
 
-SELECT nof.[Icosagonain_Expirmentation_Cell__c]
+SELECT 
+--nof.OppID AS remap_opp_id,
+--pipe.OppId AS pipe_temp_opp_id,
+
+nof.[Icosagonain_Expirmentation_Cell__c]
       ,nof.[LeadType]
       ,nof.[ContactID]
       ,nof.[ContactFirstName]
@@ -156,6 +193,7 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 	 o.Started_Date_Time__c,
 	 o.[Closed_Lost_Date_Time__c],
 	 o.FAFSA_Received__c,
+	 
 
 	 /*The following case when statements are identifying the treatment the testing groups ACTUALLY received
 	 and the treatments that the control group would have been eligible to receive*/
@@ -167,8 +205,8 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 	
 	Now let's find the people that actually recieved a dialer AND a task, what a lucky bunch. 
 	 If you entered pop 2/4 (dialer day) and stayed till task day (2/11)
-	 or entered 1/28 (dialer day), stayed thru task day (2/4)
-	 or entered 1/21 (task day), stayed thru dialer day (1/28)
+	 or entered 1/28 (task day), stayed thru dialer day (2/4)
+	 or entered 1/21 (dialer day), stayed thru task day (1/28)
 	 AND we originally said you were in the 'Dialer + Task' group then congratulations, you get to
 	 stay in the 'Dialer + Task' group
 	 Same situation for control group, we can assume they could have received the same treatment.
@@ -176,13 +214,13 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 
 	 
 	((nof.DateofEntry = '2021-02-04' AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-12') AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-12')
-	AND (o.FAFSA_Received__c IS NULL OR o.FAFSA_Received__c > '2021-02-11')  AND feb11.Planned_Start_Term = '21EW4')
+	AND ( faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE > '2021-02-11')  )
 	OR
 	(nof.DateofEntry = '2021-01-28' AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-05') AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-05')
-	AND (o.FAFSA_Received__c IS NULL OR o.FAFSA_Received__c > '2021-02-04') AND feb4.Planned_Start_Term = '21EW4')
+	AND ( faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE > '2021-02-04') )
 	OR
     (nof.DateofEntry = '2021-01-21' AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-01-29') AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-01-29')
-	AND (o.FAFSA_Received__c IS NULL OR o.FAFSA_Received__c > '2021-01-28') AND jan28.Planned_Start_Term = '21EW4'))
+	AND ( faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE > '2021-01-28') ))
 
 	AND (nof.Test_Group <> 'Dialer Only')
 
@@ -213,10 +251,10 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
     OR (nof.DateofEntry = '2021-01-28' 
 	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-05') 
 	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-05')
-	AND (o.FAFSA_Received__c IS NULL OR o.FAFSA_Received__c > '2021-02-04') 
-	AND feb4.Planned_Start_Term = '21EW4'))
+	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE > '2021-02-04') 
+	)
 
-	AND nof.Test_Group = 'Dialer Only')
+	AND nof.Test_Group <> 'Dialer + Task')
 
 	OR	
 
@@ -228,16 +266,18 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 	(
 	(nof.DateofEntry = '2021-01-21' 
 	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-01-28') 
-	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-01-28') )
+	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-01-28') 
+	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-01-29'))
 
 		OR
         
 	(nof.DateofEntry = '2021-02-04' 
 	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-02-11') 
-	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-02-11') )
+	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-02-11') 
+	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-02-11'))
 
 		AND nof.Test_Group <> 'Dialer Only'
-		)
+		))
 
 	THEN 'Dialer Only'
 	
@@ -261,7 +301,7 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 	(nof.DateofEntry = '2021-01-28' 
 	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-02-04') 
 	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-02-04')
-	AND (o.FAFSA_Received__c IS NULL OR o.FAFSA_Received__c < '2021-02-04') ))
+	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-02-04') ))
 	AND (nof.Test_Group <> 'Dialer Only')
 
 	THEN 'Funding Task Only'
@@ -274,7 +314,13 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
 	CASE WHEN nof.Test_Group IS NULL THEN NULL 
 	WHEN nof.Test_Group LIKE '%control%' THEN 'Control'
 	ELSE 'Test'
-	END AS new_test_or_control
+	END AS new_test_or_control,
+
+
+	CAST(faf.MAILING_CORR_RECEIVED_DATE AS DATE)
+
+
+
 
 
   FROM [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer] nof
@@ -287,41 +333,65 @@ SELECT nof.[Icosagonain_Expirmentation_Cell__c]
   FROM [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer]
   WHERE ACAD = 'UG'
   AND DateofEntry > '2021-01-20'
+  --AND ContactID = '0033l00002gFYRUAA4'
   GROUP BY ContactID
   ) AS min
   ON min.ContactID = nof.ContactID
 
 
 --don't want to pull most recent opp at this point, or do we? instead pulling whatever admission opp has 21EW4
+INNER JOIN #pipeopp pipe 
+ON pipe.studentid = min.ContactID
 
-INNER JOIN UnifyStaging.dbo.Opportunity o 
-ON o.Contact__c = nof.ContactId
-left JOIN #pipeopp pipe
-ON pipe.Id = o.Id
+inner join UnifyStaging.dbo.Opportunity o 
 
+ON o.Contact__c = pipe.studentid
+AND o.id = pipe.OppId
 
+/*did we receive fafsa and when?? 
+what does POS mean in MSR.informer.ODS_CORR_RECEIVED??
+there is more than one record per student, only difference is POS
 
+*/
 
+left JOIN
+(
+SELECT msr.MAILING_ID, MAX(msr.MAILING_CORR_RECEIVED_DATE) AS MAILING_CORR_RECEIVED_DATE, con.Id
 
-inner JOIN #jan28 jan28
-ON  jan28.studentid = nof.ContactID
-inner JOIN #feb4 feb4
-ON feb4.studentid = nof.ContactID
-inner JOIN #feb11 feb11 
-ON feb11.studentid = nof.ContactID
+FROM MSR.informer.ODS_CORR_RECEIVED msr
+INNER JOIN 
+(SELECT DISTINCT C.Colleague_ID__c, c.Id
+FROM Data_Reporting.dbo.Remap_NoFAFSA_Dialer d 
+INNER JOIN UnifyStaging.dbo.Contact c ON c.id = d.ContactID
+WHERE d.DateofEntry >'2021-01-20' AND d.Acad = 'UG') con
+ON con.Colleague_ID__c = msr.MAILING_ID
+WHERE MAILING_CORR_RECEIVED = 'F20ISIRC'
+GROUP BY msr.MAILING_ID, con.Id
+) faf
+ON 
+faf.Id = nof.ContactID
+
+--inner JOIN #jan28 jan28
+--ON  jan28.studentid = nof.ContactID
+--inner JOIN #feb4 feb4
+--ON feb4.studentid = nof.ContactID
+--inner JOIN #feb11 feb11 
+--ON feb11.studentid = nof.ContactID
 
 
  WHERE
 
 	 nof.DateofEntry = min.enter
   AND nof.DateofEntry > '2021-01-20'
+  --AND o.Id IS NOT null
   --AND rt.name = 'Admission Opportunity'
-  AND pipe.Planned_Start_Term = '21EW4'
+ -- AND pipe.Planned_Start_Term = '21EW4'
 
   
 	 
 	 --SELECT * FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
-
+	 
+	 --DELETE  FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
 	 --
 	 --SELECT DISTINCT contactID FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer]
 	 --WHERE acad = 'UG'
