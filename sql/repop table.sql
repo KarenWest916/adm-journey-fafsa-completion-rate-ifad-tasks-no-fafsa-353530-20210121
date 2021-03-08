@@ -40,6 +40,7 @@ in the pipeline logging redux table.
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-01-28'
 		AND p.Planned_Start_Term = '21EW4'
+		AND p.coce_admissionstatus_displayname = 'Open'
 
 
 		IF OBJECT_ID ('tempdb..#feb4') IS NOT NULL
@@ -51,7 +52,7 @@ in the pipeline logging redux table.
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-02-04'
 		AND p.Planned_Start_Term = '21EW4'
-
+		AND p.coce_admissionstatus_displayname = 'Open'
 
 		IF OBJECT_ID ('tempdb..#feb11') IS NOT NULL
 			DROP TABLE #feb11;
@@ -62,18 +63,46 @@ in the pipeline logging redux table.
 		FROM Data_Reporting.dbo.PipelineLoggingRedux p
 		WHERE p.DateOfEntry = '2021-02-11'
 		AND p.Planned_Start_Term = '21EW4'
+		AND p.coce_admissionstatus_displayname = 'Open'
 
 
 
 
 /* this is here I got stuck - attempting to insert the planned term from the temp tables into newly added columns in Repop table*/
 
-INSERT INTO Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] (jan28_term)
-SELECT Planned_Start_Term
+UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+SET jan28_term = 'inpipe'
+--INSERT INTO Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] --(jan28_term)
+--SELECT Planned_Start_Term,J28.*
 FROM #jan28 j28
 INNER JOIN Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] pop
 ON j28.studentid = pop.ContactID
-WHERE j28.studentid = pop.ContactID
+--WHERE j28.studentid = pop.ContactID
+
+
+UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+SET feb4_term = 'inpipe'
+--INSERT INTO Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] --(jan28_term)
+--SELECT Planned_Start_Term,J28.*
+--SELECT f4.*
+FROM #feb4 f4
+INNER JOIN Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] pop
+ON f4.studentid = pop.ContactID
+--WHERE j28.studentid = pop.ContactID
+
+UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+SET feb11_term = 'inpipe'
+--INSERT INTO Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] --(jan28_term)
+--SELECT Planned_Start_Term,J28.*
+--SELECT f11.*
+FROM #feb11 f11
+INNER JOIN Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] pop
+ON f11.studentid = pop.ContactID
+--WHERE j28.studentid = pop.ContactID
+
+
+
+--SELECT * FROM Data_Reporting.DBO.PipelineLoggingRedux WHERE DateOfEntry = '2021-01-28' AND ID = '0063l00000l8JKIAA2'
 
 
 
@@ -89,46 +118,65 @@ WHERE j28.studentid = pop.ContactID
 
 		IF OBJECT_ID ('tempdb..#pipeopp') IS NOT NULL
 			DROP TABLE #pipeopp;
-			SELECT distinct p2.id AS OppId, p2.studentid
+			--SELECT distinct p2.id AS OppId, p2.studentid
 			
-			INTO #pipeopp
+			--INTO #pipeopp
 
 		
-			FROM Data_Reporting.dbo.PipelineLoggingRedux p2
-			INNER JOIN 
+			--FROM Data_Reporting.dbo.PipelineLoggingRedux p2
+			--INNER JOIN 
 
-			(SELECT p.Id AS OppId,
+			--(
+
+
+			--Grab contactid, oppid, and max date for the three later dates in the fafsa table
+			SELECT p.Id AS OppId,
 			p.studentid, 
-			p.dateofentry,
-			ROW_NUMBER() OVER (PARTITION BY p.studentid ORDER BY p.DateOfEntry DESC) AS RN
+			MAX(p.dateofentry) [MaxDate]
+			INTO #pipeopp
 
 			FROM Data_Reporting.dbo.PipelineLoggingRedux p
 
 			INNER JOIN 
 			--grabs all oppIds that are admission opportunities
 			(
-			SELECT DISTINCT o.id, o.Contact__c
+			SELECT 
+			--DISTINCT 
+			    o.Contact__c, o.id, ROW_NUMBER() OVER (PARTITION BY O.Contact__c ORDER BY O.CreatedDate DESC) AS RN
 				FROM UnifyStaging.dbo.Opportunity o
 				INNER JOIN UnifyStaging.dbo.RecordType rt
 				ON rt.id = o.RecordTypeId
 				WHERE rt.name = 'Admission Opportunity'
-				) AS admopp
+				AND EXISTS(SELECT 1 FROM 
+				 Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer] WHERE ContactID = o.Contact__c AND Acad = 'UG' AND DateofEntry > '2021-01-20')
 
-				ON admopp.id = p.Id
-				AND admopp.Contact__c = p.studentid
+				) AS admopp ON admopp.id = p.Id
+				AND admopp.Contact__c = p.studentid AND admopp.RN = 1
 
 			WHERE(p.DateOfEntry = '2021-01-28'
 			OR p.DateOfEntry = '2021-02-04'
 			OR p.DateOfEntry = '2021-02-11')
+			GROUP BY p.Id,p.studentid
 			
-			) AS p1
+			--) AS p1
 
-			ON p1.OppId = p2.id
+			--ON p1.OppId = p2.id
 
 
-			where p1.RN = 1
-			AND p2.DateOfEntry = p1.DateOfEntry
+			--where p1.RN = 1
+			--AND p2.DateOfEntry = p1.DateOfEntry
 			--AND p2.studentid = '0033l00002gFYRUAA4'
+
+--update original fafsa storage table
+UPDATE F 
+SET [OppID]  = p.OppId
+--SELECT f.* 
+FROM #pipeopp p
+INNER JOIN Data_Reporting.dbo.Remap_NoFAFSA_Dialer_UG_Repop f ON f.ContactID = p.studentid
+WHERE f.OppID IS NULL 
+
+
+
 
 
 
@@ -213,7 +261,11 @@ nof.[Icosagonain_Expirmentation_Cell__c]
 	*/
 
 	 
-	((nof.DateofEntry = '2021-02-04' AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-12') AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-12')
+	(
+	(
+		nof.DateofEntry = '2021-02-04' 
+		AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-12') 
+		AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-12')
 	AND ( faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE > '2021-02-11')  )
 	OR
 	(nof.DateofEntry = '2021-01-28' AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c > '2021-02-05') AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c > '2021-02-05')
