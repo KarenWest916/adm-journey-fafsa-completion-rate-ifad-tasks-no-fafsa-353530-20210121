@@ -314,19 +314,25 @@ nof.[Icosagonain_Expirmentation_Cell__c]
 	If lead was originally assigned to 'Control' or 'Dialer + Task' and entered pop on dialer day 1/21 or 2/4, 
 	but closed out before funding task day, they would only have been eligible for Dialer Only
 	*/
+
+		---UPDATE 3/8 Karen:
+	--originally this included the closed/lost null, registered null, received date null, but we don't want these to be null.
+	--if all of those fields are null, then you would have been around long enough to get both treatments
+	--need to rework, to see the update query done on 3/8, search for "Karen 3/8 Update Dialer Task Onlys" in this query
+
 	
 	(
 	(nof.DateofEntry = '2021-01-21' 
-	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-01-28') 
-	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-01-28') 
-	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-01-29'))
+	AND (o.Closed_Lost_Date_Time__c < '2021-01-28') 
+	AND (o.Registered_Date_Time__c < '2021-01-28') 
+	AND (faf.MAILING_CORR_RECEIVED_DATE < '2021-01-29'))
 
 		OR
         
 	(nof.DateofEntry = '2021-02-04' 
-	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-02-11') 
-	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-02-11') 
-	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-02-11'))
+	AND (o.Closed_Lost_Date_Time__c < '2021-02-11') 
+	AND (o.Registered_Date_Time__c < '2021-02-11') 
+	AND (faf.MAILING_CORR_RECEIVED_DATE < '2021-02-11'))
 
 		AND nof.Test_Group <> 'Dialer Only'
 		))
@@ -347,13 +353,19 @@ nof.[Icosagonain_Expirmentation_Cell__c]
 	funding task person. Sorry, no dialer for you even if we put you in the 'Dialer + Task' group in the remap table.
 	*/
 
+
+	---UPDATE 3/8 Karen:
+	--originally this included the closed/lost null, registered null, received date null, but we don't want these to be null.
+	--if all of those fields are null, then you would have been around long enough to get both treatments
+	--need to rework, to see the update query done on 3/8, search for "Karen 3/8 Update Funding Task Onlys" in this query
+
 	when
 	(nof.DateofEntry = '2021-02-11'
 	OR 
 	(nof.DateofEntry = '2021-01-28' 
-	AND (o.Closed_Lost_Date_Time__c is NULL OR o.Closed_Lost_Date_Time__c < '2021-02-04') 
-	AND (o.Registered_Date_Time__c IS NULL OR o.Registered_Date_Time__c < '2021-02-04')
-	AND (faf.MAILING_CORR_RECEIVED_DATE IS NULL OR faf.MAILING_CORR_RECEIVED_DATE < '2021-02-04') ))
+	AND (o.Closed_Lost_Date_Time__c < '2021-02-04') 
+	AND (o.Registered_Date_Time__c < '2021-02-04')
+	AND (faf.MAILING_CORR_RECEIVED_DATE < '2021-02-04') ))
 	AND (nof.Test_Group <> 'Dialer Only')
 
 	THEN 'Funding Task Only'
@@ -451,3 +463,274 @@ faf.Id = nof.ContactID
 	 --GROUP BY ContactID
 
 	 --SELECT TOP 100 * FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer]
+
+
+
+	 --%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+	 --%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-%-
+
+	 /*
+	 Updating the remap repop table to account for if anyone fell out of the treatment population because their term start changed from 21EW4 before they received the 2nd treatment
+	 */
+
+	 --1/21 was dialer day, so if you entered pop that day and you're Dialer Only, then you're still Dialer only
+	 --If you are Dialer & Task or Control and you entered 1/21 and on Jan 28th you were no longer in the pipeline, 
+	 --then you would have only received a Dialer
+
+
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = 'Dialer Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-01-21'
+	 AND treatment <> 'Dialer Only'
+	 AND jan28_term IS NULL
+     
+
+
+	 
+--"Karen 3/8 Update Funding Task Onlys"  <--- search for this to see my notes above on why I did this, had an error in my original population of the REpop--
+
+
+UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]	
+SELECT 
+nof.[Icosagonain_Expirmentation_Cell__c]
+      ,nof.[LeadType]
+      ,nof.[ContactID]
+      ,nof.[stagename]
+      ,(nof.[DateofEntry]) AS enter_pop_date
+      ,nof.[WrongFAFSA]
+      ,nof.[Acad]
+      ,nof.[Test_Group]
+	  ,nof.new_test_or_control
+	  ,nof.treatment
+      ,nof.[OppID]
+      ,nof.[Financial__c]
+	  ,	 o.Inquired_Date_Time__c,
+	 o.Applied_Date_Time__c,
+	 o.App_in_Progress_Date_Time__c,
+	 o.Accepted_Date_Time__c,
+	 o.Registered_Date_Time__c,
+	 o.Started_Date_Time__c,
+	 o.[Closed_Lost_Date_Time__c],
+	faf.MAILING_CORR_RECEIVED_DATE
+--SET treatment = 'Dialer + Funding Task'
+
+  FROM [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] nof
+  INNER JOIN	
+
+ UnifyStaging.dbo.Opportunity o 
+
+on o.id = nof.OppId
+
+left JOIN
+(
+SELECT msr.MAILING_ID, MAX(msr.MAILING_CORR_RECEIVED_DATE) AS MAILING_CORR_RECEIVED_DATE, con.Id
+
+FROM MSR.informer.ODS_CORR_RECEIVED msr
+INNER JOIN 
+(SELECT DISTINCT C.Colleague_ID__c, c.Id
+FROM Data_Reporting.dbo.Remap_NoFAFSA_Dialer d 
+INNER JOIN UnifyStaging.dbo.Contact c ON c.id = d.ContactID
+WHERE d.DateofEntry >'2021-01-20' AND d.Acad = 'UG') con
+ON con.Colleague_ID__c = msr.MAILING_ID
+WHERE MAILING_CORR_RECEIVED = 'F20ISIRC'
+GROUP BY msr.MAILING_ID, con.Id
+) faf
+ON 
+faf.Id = nof.ContactID
+
+ WHERE
+nof.DateofEntry = '2021-01-28' 
+AND o.Closed_Lost_Date_Time__c IS null
+	AND o.Registered_Date_Time__c IS null
+	AND faf.MAILING_CORR_RECEIVED_DATE IS NULL
+    AND nof.treatment = 'Dialer Only'
+	    --AND nof.treatment = 'Funding Task Only'
+	AND nof.Test_Group IS NOT NULL
+    
+
+
+	---*******did I change original "Dialer Onlys" to "Dialer + Tasks"?? if so need to switch back
+
+SELECT * FROM [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+where Test_Group = 'Dialer Only'
+and new_test_or_control = 'Dialer + Funding Task'
+
+---okay good, no I didn't
+	-----------
+
+	
+	 
+--"Karen 3/8 Update Dialer Task Onlys"  <--- search for this to see my notes above on why I did this, had an error in my original population of the REpop--
+
+
+UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]	
+--SELECT 
+--nof.[Icosagonain_Expirmentation_Cell__c]
+--      ,nof.[LeadType]
+--      ,nof.[ContactID]
+--      ,nof.[stagename]
+--      ,(nof.[DateofEntry]) AS enter_pop_date
+--      ,nof.[WrongFAFSA]
+--      ,nof.[Acad]
+--      ,nof.[Test_Group]
+--	  ,nof.new_test_or_control
+--	  ,nof.treatment
+--      ,nof.[OppID]
+--      ,nof.[Financial__c]
+--	  ,	 o.Inquired_Date_Time__c,
+--	 o.Applied_Date_Time__c,
+--	 o.App_in_Progress_Date_Time__c,
+--	 o.Accepted_Date_Time__c,
+--	 o.Registered_Date_Time__c,
+--	 o.Started_Date_Time__c,
+--	 o.[Closed_Lost_Date_Time__c],
+--	faf.MAILING_CORR_RECEIVED_DATE
+SET treatment = 'Dialer + Funding Task'
+
+  FROM [Data_Reporting].[dbo].[Remap_NoFAFSA_Dialer_UG_Repop] nof
+  INNER JOIN	
+
+ UnifyStaging.dbo.Opportunity o 
+
+on o.id = nof.OppId
+
+left JOIN
+(
+SELECT msr.MAILING_ID, MAX(msr.MAILING_CORR_RECEIVED_DATE) AS MAILING_CORR_RECEIVED_DATE, con.Id
+
+FROM MSR.informer.ODS_CORR_RECEIVED msr
+INNER JOIN 
+(SELECT DISTINCT C.Colleague_ID__c, c.Id
+FROM Data_Reporting.dbo.Remap_NoFAFSA_Dialer d 
+INNER JOIN UnifyStaging.dbo.Contact c ON c.id = d.ContactID
+WHERE d.DateofEntry >'2021-01-20' AND d.Acad = 'UG') con
+ON con.Colleague_ID__c = msr.MAILING_ID
+WHERE MAILING_CORR_RECEIVED = 'F20ISIRC'
+GROUP BY msr.MAILING_ID, con.Id
+) faf
+ON 
+faf.Id = nof.ContactID
+
+ WHERE
+(nof.DateofEntry = '2021-01-21' OR nof.DateofEntry = '2021-02-04')
+AND (o.Closed_Lost_Date_Time__c IS null
+	AND o.Registered_Date_Time__c IS null
+	AND faf.MAILING_CORR_RECEIVED_DATE IS NULL
+    AND nof.treatment = 'Dialer Only'
+	AND nof.Test_Group <> 'Dialer Only')
+
+
+
+	 /*
+	  1/28 was funding task day, so if you entered pop that day and you're Funding Task Only, then you're still Funding Task only
+	 #1.) If you are Dialer Only but your term was not 21EW4 on 2/4, then you didn't actually receive a dialer so your are NULL
+	 #2.) If you are Dialer + Task but your term was not 21EW4 on 2/4, then you are just Task
+	 #3.) If you are Control and we reassigned you to treatment "Dialer + Task" but your term was not 21EW4 on 2/4, then you are just task
+		(there are no Controls that were assigned to "Dialer Only" that entered on 1/28)
+	 */
+
+
+
+
+	--#1:
+	UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = NULL
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-01-28'
+	 AND new_test_or_control = 'Test'
+	 AND treatment = 'Dialer Only'
+	 --AND treatment = 'Dialer Only'
+	 AND feb4_term IS NULL 
+	 
+	 --#2:
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = 'Funding Task Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-01-28'
+	 AND new_test_or_control = 'Test'
+	 AND treatment = 'Dialer + Funding Task'
+	 --AND treatment = 'Dialer Only'
+	 AND feb4_term IS NULL 
+	 
+	 --#3:
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = 'Funding Task Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-01-28'
+	 AND new_test_or_control = 'Control'
+	 AND treatment = 'Dialer + Funding Task'
+	 --AND treatment = 'Dialer Only'
+	 AND feb4_term IS NULL
+
+
+	 /*
+	  2/4 was dialer day, so if you entered pop that day and you're Dialer Only, then you're still Dialeronly
+	 #1.) If you are Funding Task Only but your term was not 21EW4 on 2/11, then you didn't actually receive a funding task so your are NULL.
+		There actually were no records to match the above criteria because Funding Task Only was not an original test group
+	 #2.) If you are Dialer + Task but your term was not 21EW4 on 2/11, then you are just Dialer
+	 #3.) If you are Control and we reassigned you to treatment "Dialer + Task" but your term was not 21EW4 on 2/4, then you are just dialer
+	 this already appeared to have been updated
+		(there are no Controls that were assigned to "Funding Only" that entered on 2/4)
+	 */
+
+
+	  --#1:
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 --SET treatment = 'Funding Task Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-02-04'
+	 --AND new_test_or_control = 'Control'
+	 AND treatment = 'Funding Task Only'
+	 --AND treatment = 'Dialer Only'
+	 AND feb11_term IS NULL
+
+
+	--#2:
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = 'Dialer Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-02-04'
+	 --AND new_test_or_control = 'Control'
+	 AND treatment = 'Dialer + Funding Task'
+	 --AND treatment = 'Dialer Only'
+	 AND feb11_term IS NULL
+
+	 
+	--#3:
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	-- SET treatment = 'Dialer Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE DateofEntry = '2021-02-04'
+	 	 AND feb11_term IS NULL
+	 AND new_test_or_control = 'Control'
+	 AND treatment = 'Dialer + Funding Task'
+
+
+
+/*
+Some of the original Dialer Only bunch got moved to Dialer + Funding Task  or Funding Task Only so we need to put them back to Dialer Only, we would not have given them a task
+*/
+	 UPDATE Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 --SELECT *
+	 SET treatment = 'Dialer Only'
+	 FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE 
+	 Test_Group = 'Dialer Only'
+	 --AND new_test_or_control = 'Control'
+	 AND (treatment = 'Dialer + Funding Task' OR treatment = 'Funding Task Only')
+
+
+
+
+
+	 --just making sure I didn't put any Ico nulls back into the mix and I did not 
+	 SELECT * FROM Data_Reporting.[dbo].[Remap_NoFAFSA_Dialer_UG_Repop]
+	 WHERE Icosagonain_Expirmentation_Cell__c IS NULL AND new_test_or_control IS NOT null
