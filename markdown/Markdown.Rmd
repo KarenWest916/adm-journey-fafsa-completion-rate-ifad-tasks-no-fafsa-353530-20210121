@@ -27,18 +27,24 @@ __Theory:__ One of the biggest impediments to students who plan on using financi
 
 __Hypothesis:__ Outreaching students who have not completed their FAFSA *increases* their likelihood to complete their FAFSA.
 
+---
+
 ## Test Design `r fontawesome::fa("flask")`
 
 __Test Metric:__ FAFSA Completion Rate, calculated as:
 $$FAFSA Completion Rate  = \sum_{n=FAFSA Complete} / \sum_{n=Total Eligible to Complete FAFSA}$$
 
-__Testing Groups:__ Of all eligible members of the population (full criteria list below), control and experiment groups were assigned according to testing cells on the Unify contact.
+__Original Testing Groups:__ Of all eligible members of the population (full criteria list below), control and experiment groups were assigned according to testing cells on the Unify contact.
 
 + Control Group: **30%** of eligible list were not dialed nor provided with a funding task
 + Dialer Experiment Group: **35%** of eligible list - these were *dialed*
-+ Dialer & Task Experiment Group: **35%** of eligible list - these were *dialed* and a *funding task* was added in Unify
++ Dialer + Task Experiment Group: **35%** of eligible list - these were *dialed* and a *funding task* was added in Unify
 
-Dialers were performed every other week and Funding Tasks were created alternating weeks.
+__Reassigned Test and Control Groups:__ Using the same eligible members of the population (full criteria list below), control and experiment groups were reassigned taking into account treatments that they actually received (or were eligible to receive in the case of the control group). More detail is provided in the Learnings section.
+
++ Dialer + Funding Task Group: Originally assigned to the Dialer + Task group and actually received at least one dialer and one funding task.
++ Dialer Only Group: Originally assigned to either the Dialer Only or the Dialer + Task group and received a dialer but did not receive any funding task.
++ Funding Task Only Group: Originally assigned to the Dialer + Task group and received a funding task but did not receive any dialers.
 
 **Experiment Population Eligibility (AKA InPopulation):**
 
@@ -48,39 +54,58 @@ Dialers were performed every other week and Funding Tasks were created alternati
 + Prospective student has either indicated they plan on using financial aid (per Financial Plan field in Unify Admission Opportunity), or Financial Plan field is blank
 + Is not Course-Work Only (CWO) or a Guild student
 
+---
+
 ## Outcomes & Learnings `r fontawesome::fa("chart-bar")`
 
 ### Experiment Results
 
 + __Overall Results as of 3/1/21:__ 
 
-  - FAFSA Completion Rate for the **Dialer + Task** test group was **0.4 percentage points lower (-1.7% change)**. This difference is not statistically significant at 95% confidence.
+  - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.7 percentage points lower (-3.4% change)**. This difference is not statistically significant at 90% confidence.
 
-  - FAFSA Completion Rate for the **Dialer Only** test group was **1.0 percentage points higher (3.3% change)**. This difference is not statistically significant at 95% confidence.
+  - FAFSA Completion Rate for the **Dialer Only** test group was **10.9 percentage points lower (-44.2% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
+  
+  - FAFSA Completion Rate for the **Funding Task Only** test group was **2.2 percentage points higher (10.2% change)**. This difference is statistically significant at 95% confidence. 
 
-+ __Completed FAFSA and Registered (Rate):__ NEED TO UPDATE The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**21.1%**) as compared to the control group (**22.1%**).
++ __Completed FAFSA and Registered (Rate):__ __IS THIS WORTH UPDATING??__ The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**21.1%**) as compared to the control group (**22.1%**).==
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210301.png", ""))
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.png", ""))
 ```
 
 
-__Learnings:__
+### Learnings
 
-can we isolate just those that received a task
+The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population __and__ receiving the intended treatment. The act of assigning an individual to a test population occurred when the dialing and funding tasks were pulled and  those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. 
+<br>
 
+The chart below shows the experiment results if we only considered the original test population groups and not the treatments that they actually received.
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210312_orgpop.png", ""))
+```
+<br>
+
+Because of the misaslignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
+
+<br>
+
+Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The test group includes those that we originally randomly assigned to "Dialer Only" or "Dialer + Task" but then after reviewing actual treatments, all original "Dialer Only" and a portion of "Dialer + Task" were reassigned to "Dialer Only". While this is a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations.
+<br>
+<br>
 __Next Steps:__
 
-maybe test with just a funding task and no dialer?
+Additional Experimentation with Funding Task Only.
 
 <br>
 
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
-
-
+__FAFSA__ Federal Application for Financial Student Aid
 ## Appendix `r fontawesome::fa("toilet-paper")`
 <!-- #`r fontawesome::fa("stack-overflow")` -->
 
-Dialers Ran: 1/21, 2/4 
-Funding Tasks Created: 1/28, 2/11
+__Dialers Ran:__ 1/21, 2/4 
+__Funding Tasks Created:__ 1/28, 2/11
+<br>
 Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being run that day
