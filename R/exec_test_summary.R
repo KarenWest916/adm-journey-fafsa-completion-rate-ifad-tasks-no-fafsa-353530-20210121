@@ -12,8 +12,8 @@ create_test_summary(
 
   input_vars = c("New Starts",
                  "1/21/21 - 3/1/21", # Date range of test
-                 " ", # Test result 
-                 "TBD" ) # Recommendation
+                 "Inconclusive", # Test result 
+                 "Additional Experimentation" ) # Recommendation
 )
 
 

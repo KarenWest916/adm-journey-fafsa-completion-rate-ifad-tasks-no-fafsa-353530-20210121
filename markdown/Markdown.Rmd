@@ -50,7 +50,7 @@ __Reassigned Test and Control Groups:__ Using the same eligible members of the p
 
 + UG prospective student with open Admission opportunity for the 21EW4 term 
 + In Applied, App In Progress or Accepted Stage 
-+ Has not completed a 20/21 FAFSA or has only completed the "wrong" FAFSA year (only completed 21-22 FAFSA form and must complete 20-21)    
++ Has not completed a 20/21 FAFSA or has only completed the "wrong" FAFSA year (only completed 21/22 FAFSA form and must complete 20/21)    
 + Prospective student has either indicated they plan on using financial aid (per Financial Plan field in Unify Admission Opportunity), or Financial Plan field is blank
 + Is not Course-Work Only (CWO) or a Guild student
 
@@ -77,7 +77,7 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.pn
 
 ### Learnings
 
-The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population __and__ receiving the intended treatment. The act of assigning an individual to a test population occurred when the dialing and funding tasks were pulled and  those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. 
+The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population __and__ receiving the intended treatment. The act of assigning an individual to the original test population occurred when the list of applicants were pulled for the dialing and/or funding tasks that were occuring that day; those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. 
 <br>
 
 The chart below shows the experiment results if we only considered the original test population groups and not the treatments that they actually received.
@@ -89,9 +89,8 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210312_orgpop.p
 
 Because of the misaslignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
 
-<br>
 
-Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The test group includes those that we originally randomly assigned to "Dialer Only" or "Dialer + Task" but then after reviewing actual treatments, all original "Dialer Only" and a portion of "Dialer + Task" were reassigned to "Dialer Only". While this is a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations.
+Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The test group includes those that we originally randomly assigned to "Dialer Only" or "Dialer + Task" but then after reviewing actual treatments, all original "Dialer Only" and a portion of "Dialer + Task" were reassigned to "Dialer Only". While this is a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations which is important to testing design.
 <br>
 <br>
 __Next Steps:__
@@ -104,7 +103,9 @@ Additional Experimentation with Funding Task Only.
 __FAFSA__ Federal Application for Financial Student Aid
 ## Appendix `r fontawesome::fa("toilet-paper")`
 <!-- #`r fontawesome::fa("stack-overflow")` -->
+<br>
 
+__Notes:__
 __Dialers Ran:__ 1/21, 2/4 
 __Funding Tasks Created:__ 1/28, 2/11
 <br>
