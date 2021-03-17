@@ -75,7 +75,7 @@ fafsa_dates_df <- dbGetQuery(
 #database connection 50333
 ```{r connection-string,include=FALSE}
 #database connection
-con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL Server Native Client 11.0};\n                          Server=COCE-LSTNR,50333;\n                          Database=AARDW;\n                          trusted_connection=yes;")
+con_aardw <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL Server Native Client 11.0};\n                          Server=COCE-LSTNR,50333;\n                          Database=AARDW;\n                          trusted_connection=yes;")
 ```
 
 
@@ -83,14 +83,22 @@ con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL 
 #importing Unify IDs from call logs if they were dialed in no fafsa dialer
 ```{r}
 call_logs <- dbGetQuery(
-  conn = con_data_reporting, 
+  conn = con_aardw, 
   statement = read_file(
     file = here::here("sql","call_logs.sql")
   )
 ) %>% as_tibble()
 ```
 
-
+#importing melt
+```{r}
+melt_df <- dbGetQuery(
+  conn = con_aardw, 
+  statement = read_file(
+    file = here::here("sql","melt.sql")
+  )
+) %>% as_tibble()
+```
 
 
 # joining call logs to 50222 data
@@ -106,6 +114,21 @@ nofafsa_df_calls <-
 ```
 
 
+# joining melt to 50222 data
+```{r}
+nofafsa_df_repop_melt <-
+  as_tibble() %>%
+  left_join(x = nofafsa_df_repop,
+          y = melt_df,
+          by = c("colleague_id" = "StudentColleagueID")) 
+#%>% 
+  #filter(UnifySalesforceContactID != "Unknown")
+  
+```
+
+```{r}
+write.csv(nofafsa_df_repop_melt, "C:\\Users\\k.west2\\Desktop\\nofafsa_melt.csv", row.names = FALSE)
+```
 
 #import dates table
 ```{r}
@@ -287,7 +310,7 @@ nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210312_orgpop.png
 #repopped
 ```{r}
 nofafsa_repop_results <- 
-  nofafsa_df_repop %>% 
+  nofafsa_df_repop_melt %>% 
   filter(!is.na(treatment)) %>% 
   group_by(treatment, new_test_or_control) %>% 
   summarise(
@@ -303,7 +326,7 @@ nofafsa_repop_results <-
       #Apps = sum(Apps),
        #`App Rate` = sum(Apps) / n(),
        Regs = sum(Regs),
-      `Reg Rate` = sum(Regs) / n(),
+      `Reg Rate` = sum(Regs) / n()
        #Enrolls = sum(Enrolls),
       #`Enroll Rate` = sum(Enrolls) / n()
       #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
@@ -316,7 +339,7 @@ nofafsa_repop_results <-
        #`Funding %`,
        #`Dialed %`,
       `FAFSA Completion Rate`,
-      `Reg Rate`,
+      `Reg Rate`
       #`Enroll Rate`,
       #`FAFSA to Enroll Rate`,
       #`App to Enroll`
@@ -330,7 +353,7 @@ nofafsa_repop_results <-
     #Dialed,
      #Apps
      `FAFSA Completed`,
-    Regs,
+    Regs
     #Enrolls
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
@@ -358,6 +381,75 @@ nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210308_repo
 
 
 
+#repopped, melt, regs only
+```{r}
+nofafsa_repop_results_melt <- 
+  nofafsa_df_repop_melt %>% 
+  filter(!is.na(treatment), Regs == 1, !is.na(EnrolledDay1)) %>% 
+  group_by(treatment, new_test_or_control) %>% 
+  summarise(
+      InPopulation = n(), 
+      #`Funding Tasks` = sum(funding_task),
+      #`Funding %` = sum(funding_task)/n(),
+      #`Dialer Tasks` = sum(dialer_task),
+      #`Dialer Task %` = sum(dialer_task)/n(),
+      #Dialed = sum(dialed, na.rm=T),
+      #`Dialed %` = sum(dialed, na.rm=T)/n(),
+      `FAFSA Completed` = sum(fafsa_completed),
+      `FAFSA Completion Rate` = sum(fafsa_completed)/n(),
+      #Apps = sum(Apps),
+       #`App Rate` = sum(Apps) / n(),
+      `Post Start Melts` = sum(EnrolledDay1)-sum(EnrolledDay15),
+      `Post Start Melt Rate` = 1-sum(EnrolledDay15)/sum(EnrolledDay1),
+       #Enrolls = sum(Enrolls),
+      #`Enroll Rate` = sum(Enrolls) / n()
+      #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
+       #`App to Enroll` = sum(Regs) /sum(Apps) 
+  ) %>% 
+  rename(`Treatment` = new_test_or_control) %>% 
+ gt() %>%
+     fmt_percent(columns = vars(
+       #`Dialer Task %`,
+       #`Funding %`,
+       #`Dialed %`,
+      `FAFSA Completion Rate`,
+      `Post Start Melt Rate`
+      #`Enroll Rate`,
+      #`FAFSA to Enroll Rate`,
+      #`App to Enroll`
+     
+     ), decimals = 1) %>%
+     fmt_number(columns = vars(
+     #Leads,
+    InPopulation,
+    #`Funding Tasks`,
+    #`Dialer Tasks`,
+    #Dialed,
+     #Apps
+     `FAFSA Completed`,
+    `Post Start Melts`
+    #Enrolls
+     ), decimals = 0) %>%
+      data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
+   tab_header(
+    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
+    tab_source_note(
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/17/21"))
+  #%>%
+     #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
+    #tab_options(
+      # column_labels.font.size = 13,
+      # table.font.size = 12
+    #)
+
+
+nofafsa_repop_results_melt
+  
+```
+```{r}
+# Overall results save
+nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210317_repop.png", path = here::here("imgs"))
+```
 
 ```{r}
 fafsa_weekly_file_results <- 
