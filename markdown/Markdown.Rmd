@@ -36,15 +36,19 @@ $$FAFSA Completion Rate  = \sum_{n=FAFSA Complete} / \sum_{n=Total Eligible to C
 
 __Original Testing Groups:__ Of all eligible members of the population (full criteria list below), control and experiment groups were assigned according to testing cells on the Unify contact.
 
-+ Control Group: **30%** of eligible list were not dialed nor provided with a funding task
-+ Dialer Experiment Group: **35%** of eligible list - these were *dialed*
-+ Dialer + Task Experiment Group: **35%** of eligible list - these were *dialed* and a *funding task* was added in Unify
++ Control Group: **30%** of eligible list would not be dialed nor provided with a funding task
++ Dialer Experiment Group: **35%** of eligible list - these were meant to be *dialed only*
++ Dialer + Task Experiment Group: **35%** of eligible list - these were meant to be *dialed* and have a *funding task* added in Unify
 
-__Reassigned Test and Control Groups:__ Using the same eligible members of the population (full criteria list below), control and experiment groups were reassigned taking into account treatments that they actually received (or were eligible to receive in the case of the control group). More detail is provided in the Learnings section.
+Dialer and Funding Task treatment dates can be seen in the appendix.
+
+__Reassigned Test and Control Groups:__ Test and Control groups were reassigned after the experiment ended based the timing of treatments and population eligibility (more detail provided in the Learnings section). Below is the method of reassigning to the new groups:
 
 + Dialer + Funding Task Group: Originally assigned to the Dialer + Task group and actually received at least one dialer and one funding task.
 + Dialer Only Group: Originally assigned to either the Dialer Only or the Dialer + Task group and received a dialer but did not receive any funding task.
 + Funding Task Only Group: Originally assigned to the Dialer + Task group and received a funding task but did not receive any dialers.
+
+Corresponding control groups were then matched up to the test groups based on which treatments they *would* have received based on their timing in the eligible population and if they were a part of a test group.
 
 **Experiment Population Eligibility (AKA InPopulation):**
 
@@ -60,15 +64,15 @@ __Reassigned Test and Control Groups:__ Using the same eligible members of the p
 
 ### Experiment Results
 
-+ __Overall Results as of 3/1/21:__ 
++ __Overall Results as of 3/8/21:__ 
 
   - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.7 percentage points lower (-3.4% change)**. This difference is not statistically significant at 90% confidence.
 
-  - FAFSA Completion Rate for the **Dialer Only** test group was **10.9 percentage points lower (-44.2% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
+  - FAFSA Completion Rate for the **Dialer Only** test group was **10.9 percentage points lower (-24.6% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
   
   - FAFSA Completion Rate for the **Funding Task Only** test group was **2.2 percentage points higher (10.2% change)**. This difference is statistically significant at 95% confidence. 
 
-+ __Completed FAFSA and Registered (Rate):__ __IS THIS WORTH UPDATING??__ The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**21.1%**) as compared to the control group (**22.1%**).==
++ __Completed FAFSA and Registered (Rate):__ __IS THIS WORTH UPDATING??__ The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**%**) as compared to the control group (**%**).
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
 knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.png", ""))
@@ -77,7 +81,9 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.pn
 
 ### Learnings
 
-The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population __and__ receiving the intended treatment. The act of assigning an individual to the original test population occurred when the list of applicants were pulled for the dialing and/or funding tasks that were occuring that day; those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. 
+__Treatment/Test Group Discrepancies__
+<br>
+The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population *and* receiving the intended treatment. The act of assigning an individual to the original test population occurred when the list of applicants were pulled for the dialing and/or funding tasks that were occurring that day; those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. Common reasons for falling out of the population is completion of FAFSA, opportunity being closed/lost or a planned term start change.
 <br>
 
 The chart below shows the experiment results if we only considered the original test population groups and not the treatments that they actually received.
@@ -87,10 +93,13 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210312_orgpop.p
 ```
 <br>
 
-Because of the misaslignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
+__Test Group Reassignments__
+<br>
+Because of the misalignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
 
-
-Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The test group includes those that we originally randomly assigned to "Dialer Only" or "Dialer + Task" but then after reviewing actual treatments, all original "Dialer Only" and a portion of "Dialer + Task" were reassigned to "Dialer Only". While this is a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations which is important to testing design.
+__Sample Ratio Mismatches__
+<br>
+Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The new "Dialer Only" test group includes students if they were in the in the population on a dialer day and we originally randomly assigned them to *either* the "Dialer Only" *or* "Dialer + Task" group. While the reassigning provides a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations which is important for the integrity of the test.
 <br>
 <br>
 __Next Steps:__
@@ -99,14 +108,44 @@ Additional Experimentation with Funding Task Only.
 
 <br>
 
+---
+
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
+
 __FAFSA__ Federal Application for Financial Student Aid
-## Appendix `r fontawesome::fa("toilet-paper")`
-<!-- #`r fontawesome::fa("stack-overflow")` -->
 <br>
 
-__Notes:__
-__Dialers Ran:__ 1/21, 2/4 
-__Funding Tasks Created:__ 1/28, 2/11
+---
+
+## Appendix `r fontawesome::fa("paperclip")`
+
+
+### Treatment Dates
+
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/treatment_cal.png", ""))
+```
 <br>
-Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being run that day
+
+__Note:__ Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being generated day.
+
+<br>
+
+
+---
+
+:::{.note}
+
+__Interpreting the Results__
+
++ __Confidence Level:__ The percentage of confidence that the result is a consequence of the change made or treatment administered and not a result of random chance.
+
++ __Statistical Significance:__ A test result is said to be "statistically significant" when the difference between the results of the test and control groups is too big to have been a result of chance.
+
++ __One-Sided vs. Two-Sided Test__ A one sided test is used when we only want to prove that the *increase* in conversions (i.e. the metric) that occurred for the test group is significant; it does not consider whether any *decrease* in conversions is significant. A two-sided test evaluates the significance of the test group conversions being higher *or* lower as compared to the control. If we want to be certain that a treatment being tested does not have a negative impact on the metric, then a two-sided test should be conducted.
+
+:::
+
+<br>
+<br>

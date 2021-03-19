@@ -16,6 +16,7 @@ library(tidymodels)
 library(lubridate)
 library(airtabler)
 library(ggtext)
+library(calendR)
 
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -37,15 +38,15 @@ con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL 
 
 
 
-#import data from query
-```{r}
-nofafsa_df <- dbGetQuery(
-  conn = con_data_reporting, 
-  statement = read_file(
-    file = here::here("sql","no_fafsa_dialer_task_ug_21EW4.sql")
-  )
-) %>% as_tibble()
-```
+<!-- #import data from query -->
+<!-- ```{r} -->
+<!-- nofafsa_df <- dbGetQuery( -->
+<!--   conn = con_data_reporting,  -->
+<!--   statement = read_file( -->
+<!--     file = here::here("sql","no_fafsa_dialer_task_ug_21EW4.sql") -->
+<!--   ) -->
+<!-- ) %>% as_tibble() -->
+<!-- ``` -->
 
 
 
@@ -360,7 +361,7 @@ nofafsa_repop_results <-
    tab_header(
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/8/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/19/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -376,7 +377,7 @@ nofafsa_repop_results
 
 ```{r}
 # Overall results save
-nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210308_repop.png", path = here::here("imgs"))
+nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210319_repop.png", path = here::here("imgs"))
 ```
 
 
@@ -450,6 +451,82 @@ nofafsa_repop_results_melt
 # Overall results save
 nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210317_repop.png", path = here::here("imgs"))
 ```
+
+
+
+
+
+
+
+#create vector of NAs the same length of the calendar I want to make
+```{r}
+events <- rep(NA,59)
+```
+
+
+#assign events by day in the vector of NAs
+```{r}
+events[c(21, 35)] <- "Dialer"
+events[c(28, 42)] <- "Funding Task"
+
+events
+
+
+```
+#make a pretty calendar
+```{r}
+treatment_cal <-
+  calendR(
+   start_date = "2021-01-01",
+         end_date = "2021-02-28",
+        #year = 2021, month = 1,
+        special.days = events,
+        special.col = c("lightblue", "lightgreen"),
+        low.col = "white",
+        days.col = "black",
+        bg.col = "white",
+        months.col = "black",
+        title = NULL,
+   mbg.col = "#8eb6de",
+        legend.pos = "bottom",
+        legend.title = "")
+
+treatment_cal
+
+```
+
+
+```{r}
+
+ggsave(filename = here::here("imgs","treatment_cal.png"),
+       plot = treatment_cal,
+       width = 6,
+       height = 4)
+
+
+```
+
+
+
+
+
+
+#calendar
+```{r}
+calendR(year = 2021, month = 1,
+        text = c("Dialer", "Funding Task"),
+        text.pos = c(21, 28),
+        text.size = 3,
+        text.col = 4)
+```
+
+
+
+
+
+
+
+
 
 ```{r}
 fafsa_weekly_file_results <- 
