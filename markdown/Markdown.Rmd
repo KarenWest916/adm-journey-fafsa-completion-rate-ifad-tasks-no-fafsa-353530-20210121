@@ -78,8 +78,18 @@ Corresponding control groups were then matched up to the test groups based on wh
 knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.png", ""))
 ```
 
+<br>
 
 ### Learnings
+
+<br>
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210317_repop.png", ""))
+```
+
+<br>
+__Melt Rate__ Do we want to include this? Jenn McKee asked about seeing the melt rate for the no funding tasks.
+<br>
 
 __Treatment/Test Group Discrepancies__
 <br>
