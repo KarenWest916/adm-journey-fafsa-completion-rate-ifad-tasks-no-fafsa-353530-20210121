@@ -38,15 +38,15 @@ con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL 
 
 
 
-<!-- #import data from query -->
-<!-- ```{r} -->
-<!-- nofafsa_df <- dbGetQuery( -->
-<!--   conn = con_data_reporting,  -->
-<!--   statement = read_file( -->
-<!--     file = here::here("sql","no_fafsa_dialer_task_ug_21EW4.sql") -->
-<!--   ) -->
-<!-- ) %>% as_tibble() -->
-<!-- ``` -->
+#import data from query
+```{r}
+nofafsa_df <- dbGetQuery(
+  conn = con_data_reporting,
+  statement = read_file(
+    file = here::here("sql","no_fafsa_dialer_task_ug_21EW4.sql")
+  )
+) %>% as_tibble()
+```
 
 
 
@@ -217,9 +217,9 @@ nofafsa_results <-
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
-    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
+    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>%
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/2/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/23/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -286,7 +286,7 @@ nofafsa_results <-
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
-    ) %>% 
+    subtitle = md("Original Testing Groups")) %>% 
     tab_source_note(
     source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/12/21"))
   #%>%
@@ -304,7 +304,7 @@ nofafsa_results
 
 ```{r}
 # Overall results save
-nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210312_orgpop.png", path = here::here("imgs"))
+nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210323_orgpop.png", path = here::here("imgs"))
 ```
 
 
@@ -359,9 +359,10 @@ nofafsa_repop_results <-
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
-    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
+    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
+    subtitle = md("Reassigned Testing Groups")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/19/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/23/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -377,7 +378,7 @@ nofafsa_repop_results
 
 ```{r}
 # Overall results save
-nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210319_repop.png", path = here::here("imgs"))
+nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210323_repop.png", path = here::here("imgs"))
 ```
 
 
@@ -433,9 +434,10 @@ nofafsa_repop_results_melt <-
      ), decimals = 0) %>%
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
-    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control")) %>% 
+    title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
+    subtitle = md("Melt Rate")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/17/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/23/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -449,7 +451,7 @@ nofafsa_repop_results_melt
 ```
 ```{r}
 # Overall results save
-nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210317_repop.png", path = here::here("imgs"))
+nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210323_repop.png", path = here::here("imgs"))
 ```
 
 

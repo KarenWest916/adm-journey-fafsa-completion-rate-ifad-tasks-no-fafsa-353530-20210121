@@ -1,8 +1,8 @@
 ---
 title: "Southern New Hampshire University"
-subtitle: "[DRAFT] ReMap Experiment: No FAFSA (UG) Dialing + Funding Task"
+subtitle: "ReMap Experiment: No FAFSA (UG) Dialing + Funding Task"
 author: "Karen West |  k.west2@snhu.edu"
-date: "Updated: `r Sys.Date()`"
+date: "Publication Date: 2021-03-23 <p></p> Updated: `r Sys.Date()`"
 output:
   html_document: 
     css: snhu-remap-test-style.css
@@ -23,13 +23,13 @@ knitr::include_graphics(here::here("imgs/no_fafsa_test_summary.png"))
 <br>
 
 
-__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (FAFSA) as part of the admission process.
+__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (__`FAFSA`__) as part of the admission process. A previous experiment for [21EW3](file://millyard.snhu.edu/Data/DataWebServices/SNHU%20Metrics/Analytics/HTML/remap-nofafsa_dialing_ug_21EW3-20201114.html) showed minor improvements in dialer outreach.
 
 __Hypothesis:__ Outreaching students who have not completed their FAFSA *increases* their likelihood to complete their FAFSA.
 
 ---
 
-## Test Design `r fontawesome::fa("flask")`
+## Test Design `r fontawesome::fa("flask")` {.tabset .tabset-pills} 
 
 __Test Metric:__ FAFSA Completion Rate, calculated as:
 $$FAFSA Completion Rate  = \sum_{n=FAFSA Complete} / \sum_{n=Total Eligible to Complete FAFSA}$$
@@ -41,6 +41,48 @@ __Original Testing Groups:__ Of all eligible members of the population (full cri
 + Dialer + Task Experiment Group: **35%** of eligible list - these were meant to be *dialed* and have a *funding task* added in Unify
 
 Dialer and Funding Task treatment dates can be seen in the appendix.
+<br>
+<br>
+__Treatments:__
+
++ Dialer: Student added to automated dialer campaign. Task created in Unify to let Admissions Counselor know that student is part of the dialer.
++ Funding Task: Task is created in Unify to prompt the Admissions Counselor to contact student to make sure their funding is in place.
+
+<br>
+
+### Funding Task Alert
+
+
+```{r echo=FALSE, out.width = "80%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/funding_task_alert.png"))
+```
+
+### Funding Task Contents
+
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/funding_task.png"))
+```
+
+### Dialer Task Alerts
+
+
+```{r echo=FALSE, out.width = "80%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/dialer_task_alert.png"))
+```
+
+### Dialer Task Contents
+
+
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/dialer_task.png"))
+```
+
+<br>
+
+---
+
+<br>
 
 __Reassigned Test and Control Groups:__ Test and Control groups were reassigned after the experiment ended based the timing of treatments and population eligibility (more detail provided in the Learnings section). Below is the method of reassigning to the new groups:
 
@@ -66,29 +108,31 @@ Corresponding control groups were then matched up to the test groups based on wh
 
 + __Overall Results as of 3/8/21:__ 
 
-  - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.7 percentage points lower (-3.4% change)**. This difference is not statistically significant at 90% confidence.
+  - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.7 percentage points lower (-3.4% change)**. This difference is not statistically significant at 95% confidence.
 
   - FAFSA Completion Rate for the **Dialer Only** test group was **10.9 percentage points lower (-24.6% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
   
-  - FAFSA Completion Rate for the **Funding Task Only** test group was **2.2 percentage points higher (10.2% change)**. This difference is statistically significant at 95% confidence. 
+  - FAFSA Completion Rate for the **Funding Task Only** test group was **2.2 percentage points higher (10.2% change)**. This difference is not statistically significant at 95% confidence. 
+  
+  See [appendix](#stats) for more detail on how to interpret the results.
 
-+ __Completed FAFSA and Registered (Rate):__ __IS THIS WORTH UPDATING??__ The percent of those in the population who completed a FAFSA and also registered was lower for the experiment group (**%**) as compared to the control group (**%**).
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210308_repop.png", ""))
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210323_repop.png", ""))
 ```
 
 <br>
 
 ### Learnings
 
-<br>
-```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210317_repop.png", ""))
-```
 
 <br>
-__Melt Rate__ Do we want to include this? Jenn McKee asked about seeing the melt rate for the no funding tasks.
+__Melt Rate__ Sample sizes are too small to make any statistically significant conclusions about melt rate.
+
+<br>
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210323_repop.png", ""))
+```
 <br>
 
 __Treatment/Test Group Discrepancies__
@@ -99,13 +143,20 @@ The major learnings in this experiment are related to test design. The results a
 The chart below shows the experiment results if we only considered the original test population groups and not the treatments that they actually received.
 
 ```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210312_orgpop.png", ""))
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210323_orgpop.png", ""))
 ```
 <br>
 
 __Test Group Reassignments__
 <br>
 Because of the misalignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
+
+<br>
+<br>
+```{r echo=FALSE, out.width = "100%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/no_fafsa_repop_diagram.png", ""))
+```
+<br>
 
 __Sample Ratio Mismatches__
 <br>
@@ -122,7 +173,7 @@ Additional Experimentation with Funding Task Only.
 
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
 
-__FAFSA__ Federal Application for Financial Student Aid
+__`FAFSA`__ Federal Application for Financial Student Aid
 <br>
 
 ---
@@ -142,14 +193,17 @@ __Note:__ Dialer was intended to run again on 2/18 but Data Warehouse issues pre
 
 <br>
 
+<a id="stats"></a>
+
 
 ---
 
 :::{.note}
 
-__Interpreting the Results__
 
-+ __Confidence Level:__ The percentage of confidence that the result is a consequence of the change made or treatment administered and not a result of random chance.
+__Interpreting the Results__ 
+
++ __Confidence Level:__ The percentage of confidence that the result is a consequence of the change made or treatment administered and not a result of random chance.  A 95% confidence interval indicates that we are 95% confident the test result is not due to random chance. 
 
 + __Statistical Significance:__ A test result is said to be "statistically significant" when the difference between the results of the test and control groups is too big to have been a result of chance.
 
