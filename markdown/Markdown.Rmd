@@ -23,7 +23,7 @@ knitr::include_graphics(here::here("imgs/no_fafsa_test_summary.png"))
 <br>
 
 
-__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (FAFSA) as part of the admission process.
+__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (`FAFSA`) as part of the admission process.
 
 __Hypothesis:__ Outreaching students who have not completed their FAFSA *increases* their likelihood to complete their FAFSA.
 
@@ -112,9 +112,9 @@ __Sample Ratio Mismatches__
 Because of the reassignments, we ended up with differing sizes of test versus control populations or Sample Ratio Mismatches. For example, the Control group used to compare against the Dialer Only group would have had to become eligible for the population on a Dialer Day (1/21 or 2/4) and left before a Funding Task Day (1/28 or 2/4). The new "Dialer Only" test group includes students if they were in the in the population on a dialer day and we originally randomly assigned them to *either* the "Dialer Only" *or* "Dialer + Task" group. While the reassigning provides a good comparison of two populations that would be eligible to receive the same treatments, it removes the randomness of assigning the the test versus control populations which is important for the integrity of the test.
 <br>
 <br>
-__Next Steps:__
-
-Additional Experimentation with Funding Task Only.
+__Next Steps__
+<br>
+**_Additional Experimentation._** While there were several flaws with the test design described in the Learnings section, there was some evidence of potential positive increases to FAFSA completion rates for those prospective students whose record in Unify had the funding task.  **Another iteration of this experiment should be run with testing only the funding task.**
 
 <br>
 
@@ -122,7 +122,7 @@ Additional Experimentation with Funding Task Only.
 
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
 
-__FAFSA__ Federal Application for Financial Student Aid
+`FAFSA` - Federal Application for Financial Student Aid
 <br>
 
 ---
@@ -138,7 +138,7 @@ knitr::include_graphics(here::here("imgs/treatment_cal.png", ""))
 ```
 <br>
 
-__Note:__ Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being generated day.
+__Note:__ Dialer was intended to run again on 2/18 but Data Warehouse issues prevented the list from being generated that day.
 
 <br>
 
