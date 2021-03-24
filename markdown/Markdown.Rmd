@@ -26,7 +26,7 @@ knitr::include_graphics(here::here("imgs/no_fafsa_test_summary.png"))
 
 __Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (__`FAFSA`__) as part of the admission process. A previous experiment for [21EW3](file://millyard.snhu.edu/Data/DataWebServices/SNHU%20Metrics/Analytics/HTML/remap-nofafsa_dialing_ug_21EW3-20201114.html) showed minor improvements in dialer outreach.
 
-__Hypothesis:__ Outreaching students who have not completed their (__`FAFSA`__) *increases* their likelihood to complete their (__`FAFSA`__)
+__Hypothesis:__ Outreaching students who have not completed their __`FAFSA`__ *increases* their likelihood to complete their __`FAFSA`__.  Adding an additional layer on top of dialing (a funding task) prompting the assigned admission counselor to outreach their student may also *increase* the likelihood that the prospective students will complete their __`FAFSA`__.
 
 ---
 
@@ -107,6 +107,8 @@ Corresponding control groups were then matched up to the test groups based on wh
 
 ### Experiment Results
 
+**_NOTE:_**  Experiment results below are shown based on the "reassigned" test groups explained in the 'Learnings' section that follows.
+
 + __Overall Results as of 3/24/21:__ 
 
   - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.1 percentage points lower (-0.4% change)**. This difference is not statistically significant at 95% confidence.
@@ -127,15 +129,6 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210324_repop.pn
 ### Learnings
 
 
-<br>
-__Melt Rate__ Sample sizes are too small to make any statistically significant conclusions about melt rate.
-
-<br>
-```{r echo=FALSE, out.width = "85%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210324_repop.png", ""))
-```
-<br>
-
 __Treatment/Test Group Discrepancies__
 <br>
 The major learnings in this experiment are related to test design. The results above are based on having been assigned to an experiment population *and* receiving the intended treatment. The act of assigning an individual to the original test population occurred when the list of applicants were pulled for the dialing and/or funding tasks that were occurring that day; those lists were pulled once per week. Since each type of treatment only occurred every other week, an applicant could be assigned to the "Dialer + Task" group, received the dialer, but fell out of the test population before the funding task occurred. Common reasons for falling out of the population is completion of FAFSA, opportunity being closed/lost or a planned term start change.
@@ -150,7 +143,7 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210324_orgpop.p
 
 __Test Group Reassignments__
 <br>
-Because of the misalignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.
+Because of the misalignment of test population assignments and treatments, individuals were reassigned to specific test and control populations after the conclusion of the experiment to provide a more apples-to-apples comparison of test groups that actually received a treatment and control groups that did not receive the treatment, but were in the population during specific times that would have allowed for them to receive the treatment had we assigned them to a test population originally.  **This also means that any metric could be skewed because of this, since relevant factors that could contribute to the likelihood of an event happening (like completing the FAFSA or registering) may no longer be equally spread across groups like they would have been prior to the reassignment.**
 
 <br>
 <br>
@@ -175,13 +168,22 @@ __Next Steps__
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
 
 
-__`FAFSA`__ Federal Application for Financial Student Aid
+__`FAFSA`__ Free Application for Federal Student Aid
 
 <br>
 
 ---
 
 ## Appendix `r fontawesome::fa("paperclip")`
+
+<br>
+__Melt Rate:__ Sample sizes are too small to make any statistically significant conclusions about melt rate.  Additionally, as mentioned before, since results were measured from the perspective of the reassigned pools, there is far less certainty that relevant factors across prospective students (lead type, etc.) are equivalent like they would have been in the original randomized test group assignment, meaning that any metric (including melt) could be skewed because of this.
+
+<br>
+```{r echo=FALSE, out.width = "85%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210324_repop.png", ""))
+```
+<br>
 
 
 ### Treatment Dates
