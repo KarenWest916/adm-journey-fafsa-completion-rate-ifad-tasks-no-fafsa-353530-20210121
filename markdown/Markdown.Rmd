@@ -2,7 +2,7 @@
 title: "Southern New Hampshire University"
 subtitle: "ReMap Experiment: No FAFSA (UG) Dialing + Funding Task"
 author: "Karen West |  k.west2@snhu.edu"
-date: "Publication Date: 2021-03-23 <p></p> Updated: `r Sys.Date()`"
+date: "Publication Date: 2021-03-24 <p></p> Updated: `r Sys.Date()`"
 output:
   html_document: 
     css: snhu-remap-test-style.css
@@ -23,13 +23,10 @@ knitr::include_graphics(here::here("imgs/no_fafsa_test_summary.png"))
 <br>
 
 
-<<<<<<< HEAD
-__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (__`FAFSA`__) as part of the admission process. A previous experiment for [21EW3](file://millyard.snhu.edu/Data/DataWebServices/SNHU%20Metrics/Analytics/HTML/remap-nofafsa_dialing_ug_21EW3-20201114.html) showed minor improvements in dialer outreach.
-=======
-__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (`FAFSA`) as part of the admission process.
->>>>>>> a969769cb492248d7e1942de8d5b28a35d0c3858
 
-__Hypothesis:__ Outreaching students who have not completed their FAFSA *increases* their likelihood to complete their FAFSA.
+__Theory:__ One of the biggest impediments to students who plan on using financial aid is their inability to quickly complete the Free Application for Federal Student Aid (__`FAFSA`__) as part of the admission process. A previous experiment for [21EW3](file://millyard.snhu.edu/Data/DataWebServices/SNHU%20Metrics/Analytics/HTML/remap-nofafsa_dialing_ug_21EW3-20201114.html) showed minor improvements in dialer outreach.
+
+__Hypothesis:__ Outreaching students who have not completed their (__`FAFSA`__) *increases* their likelihood to complete their (__`FAFSA`__)
 
 ---
 
@@ -49,7 +46,7 @@ Dialer and Funding Task treatment dates can be seen in the appendix.
 <br>
 __Treatments:__
 
-+ Dialer: Student added to automated dialer campaign. Task created in Unify to let Admissions Counselor know that student is part of the dialer.
++ Dialer: Student added to automated dialer campaign. Task created in Unify to let Admissions Counselor know that student is part of the dialer campaign.
 + Funding Task: Task is created in Unify to prompt the Admissions Counselor to contact student to make sure their funding is in place.
 
 <br>
@@ -110,19 +107,19 @@ Corresponding control groups were then matched up to the test groups based on wh
 
 ### Experiment Results
 
-+ __Overall Results as of 3/8/21:__ 
++ __Overall Results as of 3/24/21:__ 
 
-  - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.7 percentage points lower (-3.4% change)**. This difference is not statistically significant at 95% confidence.
+  - FAFSA Completion Rate for the **Dialer + Funding Task** test group was **0.1 percentage points lower (-0.4% change)**. This difference is not statistically significant at 95% confidence.
 
-  - FAFSA Completion Rate for the **Dialer Only** test group was **10.9 percentage points lower (-24.6% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
+  - FAFSA Completion Rate for the **Dialer Only** test group was **11.1 percentage points lower (-24.3% change)**. This difference is statistically significant at 95% confidence, however there is a significant sample ratio mismatch in the distribution (more explanation on this in learnings).
   
-  - FAFSA Completion Rate for the **Funding Task Only** test group was **2.2 percentage points higher (10.2% change)**. This difference is not statistically significant at 95% confidence. 
+  - FAFSA Completion Rate for the **Funding Task Only** test group was **3.3 percentage points higher (+14.9% change)**. This difference is not statistically significant at 95% confidence. 
   
   See [appendix](#stats) for more detail on how to interpret the results.
 
 
-```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210323_repop.png", ""))
+```{r echo=FALSE, out.width = "85%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210324_repop.png", ""))
 ```
 
 <br>
@@ -134,8 +131,8 @@ knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210323_repop.pn
 __Melt Rate__ Sample sizes are too small to make any statistically significant conclusions about melt rate.
 
 <br>
-```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210323_repop.png", ""))
+```{r echo=FALSE, out.width = "85%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_melt_20210324_repop.png", ""))
 ```
 <br>
 
@@ -146,8 +143,8 @@ The major learnings in this experiment are related to test design. The results a
 
 The chart below shows the experiment results if we only considered the original test population groups and not the treatments that they actually received.
 
-```{r echo=FALSE, out.width = "100%", fig.align='center'}
-knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210323_orgpop.png", ""))
+```{r echo=FALSE, out.width = "85%", fig.align='center'}
+knitr::include_graphics(here::here("imgs/nofafsa_21EW4_overall_20210324_orgpop.png", ""))
 ```
 <br>
 
@@ -177,11 +174,9 @@ __Next Steps__
 
 ## Glossary of Terms `r fontawesome::fa("journal-whills")`
 
-<<<<<<< HEAD
+
 __`FAFSA`__ Federal Application for Financial Student Aid
-=======
-`FAFSA` - Federal Application for Financial Student Aid
->>>>>>> a969769cb492248d7e1942de8d5b28a35d0c3858
+
 <br>
 
 ---

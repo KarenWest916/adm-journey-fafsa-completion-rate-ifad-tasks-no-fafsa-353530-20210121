@@ -38,7 +38,7 @@ con_data_reporting <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL 
 
 
 
-#import data from query
+#import data from query (old query, don't use)
 ```{r}
 nofafsa_df <- dbGetQuery(
   conn = con_data_reporting,
@@ -55,14 +55,14 @@ nofafsa_df <- dbGetQuery(
 nofafsa_df_repop <- dbGetQuery(
   conn = con_data_reporting, 
   statement = read_file(
-    file = here::here("sql","no_fafsa_dialer_task_ug_21EW4_repop.sql")
+    file = here::here("sql","no_fafsa_dialer_task_ug_21EW4_repop_2.sql")
   )
 ) %>% as_tibble()
 ```
 
 
 
-#import fafsa and file complete dates
+#import fafsa and file complete dates (for weekly complete chart, didn't end up using)
 ```{r}
 fafsa_dates_df <- dbGetQuery(
   conn = con_data_reporting, 
@@ -81,7 +81,7 @@ con_aardw <- dbConnect(odbc::odbc(), .connection_string = "Driver={SQL Server Na
 
 
 
-#importing Unify IDs from call logs if they were dialed in no fafsa dialer
+#importing Unify IDs from call logs if they were dialed in no fafsa dialer (used to check if actually dialed, don't need for results)
 ```{r}
 call_logs <- dbGetQuery(
   conn = con_aardw, 
@@ -102,7 +102,7 @@ melt_df <- dbGetQuery(
 ```
 
 
-# joining call logs to 50222 data
+# joining call logs to 50222 data (used to check if actually dialed, don't need for results)
 ```{r}
 nofafsa_df_calls <-
   as_tibble() %>%
@@ -131,7 +131,7 @@ nofafsa_df_repop_melt <-
 write.csv(nofafsa_df_repop_melt, "C:\\Users\\k.west2\\Desktop\\nofafsa_melt.csv", row.names = FALSE)
 ```
 
-#import dates table
+#import dates table  (for weekly complete chart, didn't end up using)
 ```{r}
 dates_df <- dbGetQuery(
   conn = con_aardw, 
@@ -142,7 +142,7 @@ dates_df <- dbGetQuery(
 ```
 
 
-#join to date table - FAFSA File Date
+#join to date table - FAFSA File Date (for weekly complete chart, didn't end up using)
 ```{r}
 fafsa_weekly_file_df <-
   as_tibble() %>%
@@ -153,7 +153,7 @@ fafsa_weekly_file_df <-
 
 
 
-#join to no fafsa results
+#join to no fafsa results (for weekly complete chart, didn't end up using)
 ```{r}
 no_fafsa_weekly_file_df <-
   as_tibble() %>%
@@ -166,7 +166,7 @@ no_fafsa_weekly_file_df <-
 write.csv(nofafsa_df_calls, "C:\\Users\\k.west2\\Desktop\\ug_dialer_min3.csv", row.names = FALSE)
 ```
 
-#using original test population assignments with call and task data
+#using original test population assignments with call and task data - this was used to check that test pop was actually dialed (dont need for results)
 ```{r}
 nofafsa_results <- 
   nofafsa_df_calls %>% 
@@ -234,12 +234,12 @@ nofafsa_results
 
 
 
-#original test results (no call data)
+#original test results - use for results summary (no call data)
 ```{r}
 nofafsa_results <- 
-  nofafsa_df %>% 
+  nofafsa_df_repop %>% 
   #filter(!is.na(treatment)) %>% 
-  group_by(testing_group) %>% 
+  group_by(org_testing_group) %>% 
   summarise(
       InPopulation = n(), 
       #`Funding Tasks` = sum(funding_task),
@@ -259,7 +259,7 @@ nofafsa_results <-
       #`FAFSA to Enroll Rate` = sum(Regs) / sum(fafsa_completed),
        #`App to Enroll` = sum(Regs) /sum(Apps) 
   ) %>% 
-  rename(`Test Group` = testing_group) %>% 
+  rename(`Test Group` = org_testing_group) %>% 
  gt() %>%
      fmt_percent(columns = vars(
        #`Dialer Task %`,
@@ -288,7 +288,7 @@ nofafsa_results <-
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
     subtitle = md("Original Testing Groups")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/12/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/24/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -304,11 +304,11 @@ nofafsa_results
 
 ```{r}
 # Overall results save
-nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210323_orgpop.png", path = here::here("imgs"))
+nofafsa_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210324_orgpop.png", path = here::here("imgs"))
 ```
 
 
-#repopped
+#repopped results
 ```{r}
 nofafsa_repop_results <- 
   nofafsa_df_repop_melt %>% 
@@ -362,7 +362,7 @@ nofafsa_repop_results <-
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
     subtitle = md("Reassigned Testing Groups")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/23/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/24/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -378,7 +378,7 @@ nofafsa_repop_results
 
 ```{r}
 # Overall results save
-nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210323_repop.png", path = here::here("imgs"))
+nofafsa_repop_results %>% gtsave(filename = "nofafsa_21EW4_overall_20210324_repop.png", path = here::here("imgs"))
 ```
 
 
@@ -435,9 +435,9 @@ nofafsa_repop_results_melt <-
       data_color(columns = vars(`FAFSA Completion Rate`), colors = "lightblue") %>%
    tab_header(
     title = md("21EW4 No FAFSA Dialing & Tasks: Test vs. Control"),
-    subtitle = md("Melt Rate")) %>% 
+    subtitle = md("Melt Rate - Registered Students")) %>% 
     tab_source_note(
-    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/23/21"))
+    source_note = c("Data Source:  Unify Opportunity, SSR - retrieved on 3/24/21"))
   #%>%
      #data_color(columns = vars(`Melt Rate`), colors = "lightgreen") %>%
     #tab_options(
@@ -451,7 +451,7 @@ nofafsa_repop_results_melt
 ```
 ```{r}
 # Overall results save
-nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210323_repop.png", path = here::here("imgs"))
+nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210324_repop.png", path = here::here("imgs"))
 ```
 
 
@@ -459,7 +459,7 @@ nofafsa_repop_results_melt %>% gtsave(filename = "nofafsa_21EW4_melt_20210323_re
 
 
 
-
+#calendars!!!
 #create vector of NAs the same length of the calendar I want to make
 ```{r}
 events <- rep(NA,59)
@@ -529,7 +529,7 @@ calendR(year = 2021, month = 1,
 
 
 
-
+#working- weekly file complete results
 ```{r}
 fafsa_weekly_file_results <- 
   no_fafsa_weekly_file_df %>% 
